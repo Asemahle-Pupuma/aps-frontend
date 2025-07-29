@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verify</title>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #f0f2f5;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  h2 {
+    text-align: center;
+  }
+  input, select, button {
+    display: block;
+    width: 100%;
+    margin: 12px 0;
+    padding: 10px;
+    font-size: 16px;
+  }
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+</style>
+</head>
+<body>
+  <h2>Verify Email</h2>
+  <input type="text" id="code" placeholder="Enter 6-digit pin" />
+  <button onclick="verify()">Verify</button>
+  <p id="message"></p>
+  <script>
+    const email = new URLSearchParams(window.location.search).get('email');
+    async function verify() {
+      const code = document.getElementById('code').value;
+      const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+      const data = await res.json();
+      document.getElementById('message').textContent = data.message || data.error;
+      if (data.success) {
+        setTimeout(() => window.location.href = 'home.html', 1500);
+      }
+    }
+  </script>
+</body>
+</html>
