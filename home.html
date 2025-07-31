@@ -1,46 +1,53 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <title>APS Calculator</title>
   <style>
-  body {
-    font-family: Arial, sans-serif;
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 20px;
-    background: #f0f2f5;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  h2 {
-    text-align: center;
-  }
-  input, select, button {
-    display: block;
-    width: 100%;
-    margin: 12px 0;
-    padding: 10px;
-    font-size: 16px;
-  }
-  button {
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #0056b3;
-  }
-</style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f0f2f5;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input, select, button {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
 <body>
   <h2>APS Calculator</h2>
+
+  <div id="institutions-list">
+    <h3>Public Higher Education Institutions</h3>
+    <ul id="institution-ul"></ul>
+  </div>
+
   <div id="subject-inputs"></div>
   <button onclick="calculateAPS()">Calculate & Show Qualified Courses</button>
   <div id="results"></div>
+
   <script>
+    // Subject Selection Setup
     const subjects = [
       "English Home Language", "Afrikaans FAL", "IsiZulu", "IsiXhosa",
       "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
@@ -64,6 +71,7 @@
       container.appendChild(input);
     }
 
+    // APS Calculation
     async function calculateAPS() {
       const inputs = container.querySelectorAll('input');
       const selects = container.querySelectorAll('select');
@@ -79,6 +87,26 @@
       const data = await res.json();
       document.getElementById('results').innerHTML = data.error ? data.error : JSON.stringify(data, null, 2);
     }
+
+    // 🔽 Fetch Institutions and Display
+    async function fetchInstitutions() {
+      try {
+        const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/institutions');
+        const institutions = await res.json();
+        const list = document.getElementById('institution-ul');
+        institutions.forEach(inst => {
+          const li = document.createElement('li');
+          li.textContent = `${inst.name} (${inst.code})`;
+          list.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Failed to load institutions:", error);
+      }
+    }
+
+    // Run this immediately on page load
+    fetchInstitutions();
   </script>
 </body>
 </html>
+
