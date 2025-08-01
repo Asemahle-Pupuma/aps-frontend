@@ -93,7 +93,7 @@
       for (let i = 0; i < 9; i++) {
         selections.push({ subject: selects[i].value, mark: parseInt(inputs[i].value) });
       }
-      const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/calculate', {
+      const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subjects: selections })
