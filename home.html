@@ -115,7 +115,7 @@
     // 🔽 Fetch Institutions and Display
     async function fetchInstitutions() {
       try {
-        const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/institutions');
+        const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/api/institutions');
         const institutions = await res.json();
         const list = document.getElementById('institution-ul');
         institutions.forEach(inst => {
@@ -132,7 +132,7 @@
     
   async function fetchFaculties(institutionCode) {
    try {
-    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/faculties?institutionCode=${institutionCode}`);
+    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/api/faculties?institutionCode=${institutionCode}`);
     const faculties = await res.json();
     const list = document.getElementById('faculty-ul');
     list.innerHTML = ""; // Clear previous list
@@ -149,7 +149,7 @@
 async function fetchQualifiedCourses(aps, subjects) {
   const subjectList = subjects.join(",");
   try {
-    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/courses/filter?aps=${aps}&subjects=${subjectList}`);
+    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/api/courses/filter?aps=${aps}&subjects=${subjectList}`);
     const courses = await res.json();
     const list = document.getElementById("course-list");
     list.innerHTML = "";
