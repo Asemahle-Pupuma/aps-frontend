@@ -42,6 +42,11 @@
     <ul id="institution-ul"></ul>
   </div>
 
+  <div id="faculties-list">
+  <h3>Faculties</h3>
+  <ul id="faculty-ul"></ul>
+</div>
+
   <div id="subject-inputs"></div>
   <button onclick="calculateAPS()">Calculate & Show Qualified Courses</button>
   <div id="results"></div>
@@ -86,6 +91,12 @@
       });
       const data = await res.json();
       document.getElementById('results').innerHTML = data.error ? data.error : JSON.stringify(data, null, 2);
+       ? data.error
+    : `Your APS score is: ${data.totalAPS}`;
+
+  if (!data.error) {
+    fetchQualifiedCourses(data.totalAPS, data.qualifiedSubjects);
+  }
     }
 
     // 🔽 Fetch Institutions and Display
@@ -97,12 +108,53 @@
         institutions.forEach(inst => {
           const li = document.createElement('li');
           li.textContent = `${inst.name} (${inst.code})`;
+          li.style.cursor = 'pointer';
+          li.onclick = () => fetchFaculties(inst.code);
           list.appendChild(li);
         });
       } catch (error) {
         console.error("Failed to load institutions:", error);
       }
     }
+    
+  async function fetchFaculties(institutionCode) {
+   try {
+    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/faculties?institutionCode=${institutionCode}`);
+    const faculties = await res.json();
+    const list = document.getElementById('faculty-ul');
+    list.innerHTML = ""; // Clear previous list
+
+    faculties.forEach(fac => {
+      const li = document.createElement('li');
+      li.textContent = fac.faculty_name || fac.name;
+      list.appendChild(li);
+    });
+  } catch (error) {
+    console.error("Failed to load faculties:", error);
+  }
+}
+async function fetchQualifiedCourses(aps, subjects) {
+  const subjectList = subjects.join(",");
+  try {
+    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/courses/filter?aps=${aps}&subjects=${subjectList}`);
+    const courses = await res.json();
+    const list = document.getElementById("course-list");
+    list.innerHTML = "";
+
+    if (courses.length === 0) {
+      list.innerHTML = "<li>No qualifying courses found.</li>";
+      return;
+    }
+
+    courses.forEach(course => {
+      const li = document.createElement("li");
+      li.textContent = `${course.courseName} (${course.faculty}) - APS: ${course.apsRequired}`;
+      list.appendChild(li);
+    });
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+  }
+}
 
     // Run this immediately on page load
     fetchInstitutions();
