@@ -54,12 +54,21 @@
   <script>
     // Subject Selection Setup
     const subjects = [
-      "English Home Language", "Afrikaans FAL", "IsiZulu", "IsiXhosa",
-      "Mathematics", "Mathematical Literacy", "Physical Sciences", "Life Sciences",
-      "Geography", "History", "Accounting", "Business Studies", "Economics",
-      "Computer Applications Technology", "Information Technology"
-    ];
-
+  "English Home Language", "English First Additional Language", "English Second Additional Language",
+  "Afrikaans Home Language", "Afrikaans First Additional Language", "Afrikaans Second Additional Language",
+  "IsiZulu Home Language", "IsiZulu First Additional Language",
+  "IsiXhosa Home Language", "IsiXhosa First Additional Language",
+  "IsiNdebele", "Sepedi", "Sesotho", "Setswana", "SiSwati", "Tshivenda", "Xitsonga",
+  "Mathematics", "Mathematical Literacy", "Technical Mathematics",
+  "Physical Sciences", "Life Sciences", "Agricultural Sciences", "Computer Applications Technology",
+  "Information Technology", "Geography", "History", "Religious Studies",
+  "Accounting", "Business Studies", "Economics", "Tourism", "Hospitality Studies", "Consumer Studies",
+  "Visual Arts", "Dramatic Arts", "Design", "Dance Studies", "Music",
+  "Engineering Graphics and Design", "Mechanical Technology", "Electrical Technology", "Civil Technology",
+  "Technical Sciences", "Agricultural Technology", "Agricultural Management Practices",
+  "Marine Sciences", "Equine Studies", "Sport and Exercise Science",
+  "Life Orientation"
+];
     const container = document.getElementById('subject-inputs');
     for (let i = 0; i < 9; i++) {
       const select = document.createElement('select');
