@@ -93,6 +93,10 @@
       document.getElementById('results').innerHTML = data.error ? data.error : JSON.stringify(data, null, 2);
        ? data.error
     : `Your APS score is: ${data.totalAPS}`;
+      <div id="qualified-courses">
+  <h3>Qualified Courses</h3>
+  <ul id="course-list"></ul>
+</div>
 
   if (!data.error) {
     fetchQualifiedCourses(data.totalAPS, data.qualifiedSubjects);
