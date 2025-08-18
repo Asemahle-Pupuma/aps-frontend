@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>APS Calculator</title>
+  <title>APS Calculator & Authentication</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 500px;
+      max-width: 600px;
       margin: 40px auto;
       padding: 20px;
       background: #f0f2f5;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2 {
+    h2, h3 {
       text-align: center;
     }
     input, select, button {
@@ -32,43 +32,135 @@
     button:hover {
       background: #0056b3;
     }
+    .section {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-  <h2>APS Calculator</h2>
+  <h2>LocateMyCourse</h2>
 
-  <div id="institutions-list">
+  <!-- 🔹 Authentication Section -->
+  <div class="section">
+    <h3>Signup</h3>
+    <input type="email" id="signup-email" placeholder="Email" />
+    <input type="password" id="signup-password" placeholder="Password" />
+    <button onclick="signup()">Sign Up</button>
+    <p id="signup-message"></p>
+
+    <h3>Email Verification</h3>
+    <input type="email" id="verify-email" placeholder="Email" />
+    <input type="text" id="verify-code" placeholder="Verification Code" />
+    <button onclick="verify()">Verify</button>
+    <p id="verify-message"></p>
+
+    <h3>Login</h3>
+    <input type="email" id="login-email" placeholder="Email" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="login-message"></p>
+  </div>
+
+  <!-- 🔹 APS Calculator -->
+  <div class="section">
+    <h3>APS Calculator</h3>
+    <div id="subject-inputs"></div>
+    <button onclick="calculateAPS()">Calculate & Show Qualified Courses</button>
+    <div id="results"></div>
+    <div id="qualified-courses">
+      <h3>Qualified Courses</h3>
+      <ul id="course-list"></ul>
+    </div>
+  </div>
+
+  <!-- 🔹 Institutions & Faculties -->
+  <div class="section">
     <h3>Public Higher Education Institutions</h3>
     <ul id="institution-ul"></ul>
   </div>
 
-  <div id="faculties-list">
-  <h3>Faculties</h3>
-  <ul id="faculty-ul"></ul>
-</div>
-
-  <div id="subject-inputs"></div>
-  <button onclick="calculateAPS()">Calculate & Show Qualified Courses</button>
-  <div id="results"></div>
+  <div class="section">
+    <h3>Faculties</h3>
+    <ul id="faculty-ul"></ul>
+  </div>
 
   <script>
-    // Subject Selection Setup
+    const BASE_URL = "https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev"; // 🔑 No :5000 for Replit
+
+    // ---------------- AUTH ----------------
+    async function signup() {
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      try {
+        const res = await fetch(`${BASE_URL}/api/auth/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        document.getElementById("signup-message").innerText = data.message || data.error;
+      } catch (err) {
+        document.getElementById("signup-message").innerText = "Signup failed";
+      }
+    }
+
+    async function verify() {
+      const email = document.getElementById("verify-email").value;
+      const code = document.getElementById("verify-code").value;
+      try {
+        const res = await fetch(`${BASE_URL}/api/auth/verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, code })
+        });
+        const data = await res.json();
+        document.getElementById("verify-message").innerText = data.message || data.error;
+      } catch (err) {
+        document.getElementById("verify-message").innerText = "Verification failed";
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      try {
+        const res = await fetch(`${BASE_URL}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          document.getElementById("login-message").innerText = "Login successful!";
+        } else {
+          document.getElementById("login-message").innerText = data.message || "Login failed";
+        }
+      } catch (err) {
+        document.getElementById("login-message").innerText = "Login failed";
+      }
+    }
+
+    // ---------------- APS CALCULATOR ----------------
     const subjects = [
-  "English Home Language", "English First Additional Language", "English Second Additional Language",
-  "Afrikaans Home Language", "Afrikaans First Additional Language", "Afrikaans Second Additional Language",
-  "IsiZulu Home Language", "IsiZulu First Additional Language",
-  "IsiXhosa Home Language", "IsiXhosa First Additional Language",
-  "IsiNdebele", "Sepedi", "Sesotho", "Setswana", "SiSwati", "Tshivenda", "Xitsonga",
-  "Mathematics", "Mathematical Literacy", "Technical Mathematics",
-  "Physical Sciences", "Life Sciences", "Agricultural Sciences", "Computer Applications Technology",
-  "Information Technology", "Geography", "History", "Religious Studies",
-  "Accounting", "Business Studies", "Economics", "Tourism", "Hospitality Studies", "Consumer Studies",
-  "Visual Arts", "Dramatic Arts", "Design", "Dance Studies", "Music",
-  "Engineering Graphics and Design", "Mechanical Technology", "Electrical Technology", "Civil Technology",
-  "Technical Sciences", "Agricultural Technology", "Agricultural Management Practices",
-  "Marine Sciences", "Equine Studies", "Sport and Exercise Science",
-  "Life Orientation"
-];
+      "English Home Language", "English First Additional Language", "English Second Additional Language",
+      "Afrikaans Home Language", "Afrikaans First Additional Language", "Afrikaans Second Additional Language",
+      "IsiZulu Home Language", "IsiZulu First Additional Language",
+      "IsiXhosa Home Language", "IsiXhosa First Additional Language",
+      "IsiNdebele", "Sepedi", "Sesotho", "Setswana", "SiSwati", "Tshivenda", "Xitsonga",
+      "Mathematics", "Mathematical Literacy", "Technical Mathematics",
+      "Physical Sciences", "Life Sciences", "Agricultural Sciences", "Computer Applications Technology",
+      "Information Technology", "Geography", "History", "Religious Studies",
+      "Accounting", "Business Studies", "Economics", "Tourism", "Hospitality Studies", "Consumer Studies",
+      "Visual Arts", "Dramatic Arts", "Design", "Dance Studies", "Music",
+      "Engineering Graphics and Design", "Mechanical Technology", "Electrical Technology", "Civil Technology",
+      "Technical Sciences", "Agricultural Technology", "Agricultural Management Practices",
+      "Marine Sciences", "Equine Studies", "Sport and Exercise Science",
+      "Life Orientation"
+    ];
     const container = document.getElementById('subject-inputs');
     for (let i = 0; i < 9; i++) {
       const select = document.createElement('select');
@@ -85,7 +177,6 @@
       container.appendChild(input);
     }
 
-    // APS Calculation
     async function calculateAPS() {
       const inputs = container.querySelectorAll('input');
       const selects = container.querySelectorAll('select');
@@ -93,35 +184,55 @@
       for (let i = 0; i < 9; i++) {
         selections.push({ subject: selects[i].value, mark: parseInt(inputs[i].value) });
       }
-      const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subjects: selections })
-      });
-      const data = await res.json();
-      document.getElementById('results').innerHTML = data.error ? data.error : JSON.stringify(data, null, 2);
-       ? data.error
-    : `Your APS score is: ${data.totalAPS}`;
-      <div id="qualified-courses">
-  <h3>Qualified Courses</h3>
-  <ul id="course-list"></ul>
-</div>
-
-  if (!data.error) {
-    fetchQualifiedCourses(data.totalAPS, data.qualifiedSubjects);
-  }
+      try {
+        const res = await fetch(`${BASE_URL}/calculate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subjects: selections })
+        });
+        const data = await res.json();
+        if (data.error) {
+          document.getElementById("results").innerText = data.error;
+        } else {
+          document.getElementById("results").innerText = `Your APS score is: ${data.totalAPS}`;
+          fetchQualifiedCourses(data.totalAPS, data.qualifiedSubjects);
+        }
+      } catch (err) {
+        document.getElementById("results").innerText = "Error calculating APS";
+      }
     }
 
-    // 🔽 Fetch Institutions and Display
+    async function fetchQualifiedCourses(aps, subjects) {
+      const subjectList = subjects.join(",");
+      try {
+        const res = await fetch(`${BASE_URL}/api/courses/filter?aps=${aps}&subjects=${subjectList}`);
+        const courses = await res.json();
+        const list = document.getElementById("course-list");
+        list.innerHTML = "";
+        if (courses.length === 0) {
+          list.innerHTML = "<li>No qualifying courses found.</li>";
+          return;
+        }
+        courses.forEach(course => {
+          const li = document.createElement("li");
+          li.textContent = `${course.courseName} (${course.faculty}) - APS: ${course.apsRequired}`;
+          list.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    }
+
+    // ---------------- INSTITUTIONS & FACULTIES ----------------
     async function fetchInstitutions() {
       try {
-        const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/api/institutions');
+        const res = await fetch(`${BASE_URL}/api/institutions`);
         const institutions = await res.json();
-        const list = document.getElementById('institution-ul');
+        const list = document.getElementById("institution-ul");
         institutions.forEach(inst => {
-          const li = document.createElement('li');
+          const li = document.createElement("li");
           li.textContent = `${inst.name} (${inst.code})`;
-          li.style.cursor = 'pointer';
+          li.style.cursor = "pointer";
           li.onclick = () => fetchFaculties(inst.code);
           list.appendChild(li);
         });
@@ -129,49 +240,27 @@
         console.error("Failed to load institutions:", error);
       }
     }
-    
-  async function fetchFaculties(institutionCode) {
-   try {
-    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/api/faculties?institutionCode=${institutionCode}`);
-    const faculties = await res.json();
-    const list = document.getElementById('faculty-ul');
-    list.innerHTML = ""; // Clear previous list
 
-    faculties.forEach(fac => {
-      const li = document.createElement('li');
-      li.textContent = fac.faculty_name || fac.name;
-      list.appendChild(li);
-    });
-  } catch (error) {
-    console.error("Failed to load faculties:", error);
-  }
-}
-async function fetchQualifiedCourses(aps, subjects) {
-  const subjectList = subjects.join(",");
-  try {
-    const res = await fetch(`https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/api/courses/filter?aps=${aps}&subjects=${subjectList}`);
-    const courses = await res.json();
-    const list = document.getElementById("course-list");
-    list.innerHTML = "";
-
-    if (courses.length === 0) {
-      list.innerHTML = "<li>No qualifying courses found.</li>";
-      return;
+    async function fetchFaculties(institutionCode) {
+      try {
+        const res = await fetch(`${BASE_URL}/api/faculties?institutionCode=${institutionCode}`);
+        const faculties = await res.json();
+        const list = document.getElementById("faculty-ul");
+        list.innerHTML = "";
+        faculties.forEach(fac => {
+          const li = document.createElement("li");
+          li.textContent = fac.faculty_name || fac.name;
+          list.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Failed to load faculties:", error);
+      }
     }
 
-    courses.forEach(course => {
-      const li = document.createElement("li");
-      li.textContent = `${course.courseName} (${course.faculty}) - APS: ${course.apsRequired}`;
-      list.appendChild(li);
-    });
-  } catch (error) {
-    console.error("Error fetching courses:", error);
-  }
-}
-
-    // Run this immediately on page load
+    // Run on load
     fetchInstitutions();
   </script>
 </body>
 </html>
+
 
