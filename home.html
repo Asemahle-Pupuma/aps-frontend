@@ -12,32 +12,11 @@
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2, h3 {
-      text-align: center;
-    }
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin: 12px 0;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .section {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
+    h2, h3 { text-align: center; }
+    input, select, button { display: block; width: 100%; margin: 12px 0; padding: 10px; font-size: 16px; }
+    button { background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .section { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -88,7 +67,7 @@
   </div>
 
   <script>
-    const BASE_URL = "https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev"; // 🔑 No :5000 for Replit
+    const BASE_URL = "https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev";
 
     // ---------------- AUTH ----------------
     async function signup() {
@@ -102,7 +81,7 @@
         });
         const data = await res.json();
         document.getElementById("signup-message").innerText = data.message || data.error;
-      } catch (err) {
+      } catch {
         document.getElementById("signup-message").innerText = "Signup failed";
       }
     }
@@ -118,7 +97,7 @@
         });
         const data = await res.json();
         document.getElementById("verify-message").innerText = data.message || data.error;
-      } catch (err) {
+      } catch {
         document.getElementById("verify-message").innerText = "Verification failed";
       }
     }
@@ -139,14 +118,13 @@
         } else {
           document.getElementById("login-message").innerText = data.message || "Login failed";
         }
-      } catch (err) {
+      } catch {
         document.getElementById("login-message").innerText = "Login failed";
       }
     }
 
     // ---------------- APS CALCULATOR ----------------
-    const subjects = [
-      "English Home Language", "English First Additional Language", "English Second Additional Language",
+    const subjects = [ "English Home Language", "English First Additional Language", "English Second Additional Language",
       "Afrikaans Home Language", "Afrikaans First Additional Language", "Afrikaans Second Additional Language",
       "IsiZulu Home Language", "IsiZulu First Additional Language",
       "IsiXhosa Home Language", "IsiXhosa First Additional Language",
@@ -197,7 +175,7 @@
           document.getElementById("results").innerText = `Your APS score is: ${data.totalAPS}`;
           fetchQualifiedCourses(data.totalAPS, data.qualifiedSubjects);
         }
-      } catch (err) {
+      } catch {
         document.getElementById("results").innerText = "Error calculating APS";
       }
     }
@@ -262,5 +240,3 @@
   </script>
 </body>
 </html>
-
-
