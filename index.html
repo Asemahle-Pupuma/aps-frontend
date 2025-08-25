@@ -57,7 +57,9 @@
       }
 
       try {
-        const res = await fetch("https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev:5000/signup", {
+        // Corrected fetch URL to match the new backend endpoint
+        const backendUrl = "https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev";
+        const res = await fetch(`${backendUrl}/api/auth/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })
@@ -65,7 +67,7 @@
 
         const data = await res.json();
 
-        if (res.ok) { // Check if the response status is OK (200-299)
+        if (res.ok) { // Checks for a successful status code (200-299)
           alert("Verification code sent to your email.");
           window.location.href = "verify.html?email=" + encodeURIComponent(email);
         } else {
