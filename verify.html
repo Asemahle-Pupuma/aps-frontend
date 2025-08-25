@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,26 +32,69 @@
   button:hover {
     background: #0056b3;
   }
-</style>
+  #message {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  .success {
+    color: green;
+  }
+  .error {
+    color: red;
+  }
+  </style>
 </head>
 <body>
   <h2>Verify Email</h2>
-  <input type="text" id="code" placeholder="Enter 6-digit pin" />
+  <p>Please check your email for a 6-digit verification code.</p>
+  <input type="text" id="code" placeholder="Enter 6-digit code" />
   <button onclick="verify()">Verify</button>
   <p id="message"></p>
   <script>
     const email = new URLSearchParams(window.location.search).get('email');
+    const messageEl = document.getElementById('message');
+    
+    // Add event listener to input for "Enter" key
+    document.getElementById('code').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        verify();
+      }
+    });
+
     async function verify() {
       const code = document.getElementById('code').value;
-      const res = await fetch('https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev/api/auth/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code })
-      });
-      const data = await res.json();
-      document.getElementById('message').textContent = data.message || data.error;
-      if (data.success) {
-        setTimeout(() => window.location.href = 'home.html', 1500);
+
+      if (!email || !code) {
+        messageEl.textContent = 'Email or code missing.';
+        messageEl.className = 'error';
+        return;
+      }
+
+      try {
+        const backendUrl = 'https://4c87234e-09cc-4cb8-b921-bf7b6d96050b-00-3kaul8eecqlci.riker.replit.dev';
+        const res = await fetch(`${backendUrl}/api/auth/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
+        
+        const data = await res.json();
+        
+        // Corrected success check using res.ok
+        if (res.ok) { 
+          messageEl.textContent = data.message;
+          messageEl.className = 'success';
+          setTimeout(() => window.location.href = 'home.html', 1500);
+        } else {
+          messageEl.textContent = data.message || 'Verification failed. Please try again.';
+          messageEl.className = 'error';
+        }
+
+      } catch (err) {
+        console.error('Error:', err);
+        messageEl.textContent = 'Network error. Could not connect to the server.';
+        messageEl.className = 'error';
       }
     }
   </script>
